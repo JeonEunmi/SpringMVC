@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"	
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/context
+   http://www.springframework.org/schema/context/spring-context.xsd
+   http://www.springframework.org/schema/mvc
+            http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+	<!-- @Controller, @Repository, @Service 등의 어노테이션 사용 설정 -->
+	<context:component-scan
+		base-package="com.controller, com.persistance, com.service" />
+		
+	<!-- 정적 자원에 대한 연결 정보 설정 -->
+	<mvc:annotation-driven />
+	<mvc:resources mapping="/resources/**"
+		location="/resources/" />
+
+	<!-- 포워딩 액션 진행시 JSP 페이지에 대한 prefix, suffix 설정 -->
+	<!-- "/WEB-INF/views/hello.jsp" -> "hello" -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views/" />
+		<property name="suffix" value=".jsp" />
+	</bean> 	 
+ 	 
+	<!-- dispatcher-servlet.xml과 같은 위치에 jdbc.properties 파일 준비 -->
+	<!-- 주의) context 네임스페이스 설정 추가 필요 -->	
+	<context:property-placeholder
+		location="/WEB-INF/jdbc.properties" />
+	<!-- 
+	jdbc.driverClassName=com.mysql.cj.jdbc.Driver
+	jdbc.url=jdbc:mysql://아이피주소:3306/스키마?useSSL=false&serverTimezone=UTC
+	jdbc.username=아이디
+	jdbc.password=패스워드
+	-->
+	
+	<!-- 스프링 프레임워크가 관리할 클래스 정보 설정 -->
+	<!-- 데이터베이스 커넥션 객체 등록 -->
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName"
+			value="${jdbc.driverClassName}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+	</bean>
+
+	<!-- 스프링 프레임워크가 관리할 클래스 정보 설정 -->
+	<!-- SpringJDBC 객체 등록 -->
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<!-- 생성자에 의한 의존주입 설정 -->
+		<constructor-arg ref="dataSource" />
+	</bean>
+	
+</beans>
