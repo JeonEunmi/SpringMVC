@@ -21,8 +21,32 @@
 
 <script>
 	$(document).ready(function() {
+		$(".btnSubmit").on("click", function() {
+			var form = $(this).parent();
+			var fileNameObj = $("input#fileName")[0].files;
+			var fileName = fileNameObj[0].name;
+			var fileSize = fileNameObj[0].size;
 
+			//크기 및 확장자 제한 범위 안에 있는 경우만 정상적인 서브밋 액션 진행
+			if (checkExtension(fileName, fileSize)) {
+				$(form).submit();
+			} else {
+				alert("jpg or png, max 10M");
+			}
+
+		});
 	});
+
+	//파일 전송시 크기 및 확장자 제한하는 함수 선언
+	function checkExtension(fileName, fileSize) {
+		var maxSize = 10 * 1024 * 1024; //10M
+		if (fileSize >= maxSize) {
+			return false;
+		} else if (!new RegExp("(.*?)\.(jpg|png)$").test(fileName)) {
+			return false;
+		}
+		return true;
+	}
 </script>
 
 </head>
@@ -34,8 +58,8 @@
 
 		<form action="${pageContext.request.contextPath}/user/formtest"
 			method="POST" enctype="multipart/form-data" role="form">
-			<input type="file" name="fileName" class="form-control">
-			<button type="submit" class="btn btn-default">파일업로드</button>
+			<input type="file" id="fileName" name="fileName" class="form-control">
+			<button type="button" class="btn btn-default btnSubmit">파일업로드</button>
 		</form>
 
 	</div>
